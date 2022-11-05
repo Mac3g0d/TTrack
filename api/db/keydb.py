@@ -4,4 +4,4 @@ from ..settings import get_settings
 
 settings = get_settings()
 
-keydb = get_redis_connection(url=settings.KEYDB_URL)
+keydb = get_redis_connection(decode_responses=True)

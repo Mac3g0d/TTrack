@@ -13,7 +13,7 @@ WORKDIR /ttrack
 COPY poetry.lock pyproject.toml /ttrack/
 
 RUN poetry install -n
-COPY ../api /ttrack/
+COPY . /ttrack/
 # Expose port 8000
 
 EXPOSE 8000

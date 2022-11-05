@@ -1,9 +1,15 @@
 from datetime import datetime
 
-from aredis_om import HashModel
+from aredis_om import Field, JsonModel
+
+from ..db import keydb
 
 
-class Day(HashModel):
+class Day(JsonModel):
     """Day model."""
 
-    created_at: datetime
+    events: list[str] | None = Field(index=True)
+    created_at: datetime = Field(index=True)
+
+    class Meta:
+        database = keydb

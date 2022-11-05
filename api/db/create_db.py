@@ -4,7 +4,7 @@ from sqlmodel import SQLModel
 from ..settings import get_settings
 
 settings = get_settings()
-engine = create_async_engine(settings.DATABASE_URI, echo=True, future=True, pool_size=8, max_overflow=64)  # noqa: WPS432, E501
+engine = create_async_engine(settings.DATABASE_URI, echo=False, future=True)  # noqa: WPS432, E501
 
 
 async def create_db() -> None:

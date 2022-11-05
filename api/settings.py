@@ -1,7 +1,7 @@
 import uuid
 from functools import lru_cache
 
-from pydantic import BaseSettings, Field, RedisDsn, SecretStr, validator
+from pydantic import BaseSettings, Field, SecretStr, validator
 
 
 class Settings(BaseSettings):
@@ -21,8 +21,9 @@ class Settings(BaseSettings):
 
     DATABASE_URI: str | None
 
-    KEYDB_URL: RedisDsn
+    KEYDB_URL: str
     KEYDB_PASSWORD: str
+    REDIS_OM_URL: str | None
 
     @validator("DATABASE_URI", pre=True)
     @classmethod
@@ -43,6 +44,21 @@ class Settings(BaseSettings):
         db: str = values.get("POSTGRES_DB")
         database_url = f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{db}"  # noqa: WPS221
         return database_url  # noqa: WPS331
+
+    @validator("REDIS_OM_URL", pre=True)
+    @classmethod
+    def validate_redis_mo_url(cls, v: str | None, values: dict[str, str | None]) -> str:  # noqa: N805, WPS111, VNE001, ANN102, E501, WPS210
+        """
+        Generate a redis_om url.
+
+        :param v: redis_om url parameter (default=None)
+        :param values: values of settings inited before this parameter
+        :return: str.
+        """
+        if isinstance(v, str):
+            return v
+
+        return values.get("KEYDB_URL")
 
     class Config:
         env_file = ".env"

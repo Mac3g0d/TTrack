@@ -12,9 +12,10 @@ services:
     - "5432:5432"
 
   keydb:
-    image: eqalpha/keydb:latest
+    build:
+      context: .
+      dockerfile: keydbJSONSearch.Dockerfile
     container_name: keydb
-    command: keydb-server /etc/keydb/keydb.conf --server-threads 2  --requirepass $$KEYDB_PASSWORD
     env_file:
     - api/.env
     networks:
@@ -36,7 +37,7 @@ services:
 
 
   ttrack_api:
-    build: ../api
+    build: .
     env_file:
     - api/.env
     container_name: ttrack-api
