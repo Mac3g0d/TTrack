@@ -1,0 +1,52 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:latest
+    volumes:
+    - ./pg_data:/var/lib/postgresql/data
+    networks:
+    - default
+    env_file:
+    - api/.env
+    ports:
+    - "5432:5432"
+
+  keydb:
+    image: eqalpha/keydb:latest
+    container_name: keydb
+    command: keydb-server /etc/keydb/keydb.conf --server-threads 2  --requirepass $$KEYDB_PASSWORD
+    env_file:
+    - api/.env
+    networks:
+    - default
+    volumes:
+    - data:/data
+    ports:
+    - "6379:6379"
+
+  kdb-panel:
+    container_name: kdb-panel
+    image: ghcr.io/joeferner/redis-commander:latest
+    environment:
+      REDIS_HOST: keydb
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: somestrongandexcellentpassword
+    ports:
+    - "8081:8081"
+
+
+  ttrack_api:
+    build: ../api
+    env_file:
+    - api/.env
+    container_name: ttrack-api
+    networks:
+    - default
+    depends_on:
+    - keydb
+    ports:
+    - "8000:8000"
+
+volumes:
+  data:
+    driver: local
